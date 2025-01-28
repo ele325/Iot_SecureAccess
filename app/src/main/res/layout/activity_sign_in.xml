@@ -24,7 +24,7 @@
                 android:layout_marginEnd="20sp"
                 android:layout_marginBottom="20sp"
                 android:text="Welcome \nPlease sign in here !"
-                android:textColor="@color/black"
+                android:textColor="@color/color_app"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Email :"
-                android:textColor="@color/black"
+                android:textColor="@color/color_app"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -61,8 +61,8 @@
                 android:layout_marginStart="20sp"
                 android:layout_marginTop="5sp"
                 android:drawableEnd="@drawable/ic_email"
-                android:drawableTint="@color/black"
-                android:hint="exemple@gmail.com"
+                android:drawableTint="@color/color_app"
+                android:hint="example@gmail.com"
                 android:inputType="textEmailAddress"
                 android:textSize="14sp" />
 
@@ -70,7 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Password :"
-                android:textColor="@color/black"
+                android:textColor="@color/color_app"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginTop="15sp"/>
@@ -82,7 +82,7 @@
                 android:layout_marginStart="20sp"
                 android:layout_marginTop="5sp"
                 android:drawableEnd="@drawable/ic_password"
-                android:drawableTint="@color/black"
+                android:drawableTint="@color/color_app"
                 android:hint="********"
                 android:inputType="textPassword"
                 android:textSize="14sp" />
@@ -94,7 +94,7 @@
                 android:text="Remember me !"
                 android:textSize="13sp"
                 android:textStyle="bold"
-                android:textColor="@color/black"
+                android:textColor="@color/color_app"
                 android:layout_marginTop="10sp"/>
 
             <TextView
@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/forgot_password"
                 android:layout_gravity="end"
-                android:textColor="@color/black"
+                android:textColor="@color/color_app"
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:layout_marginVertical="10sp"/>
@@ -114,7 +114,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="SIGN IN"
-                android:backgroundTint="@color/black"
+                android:backgroundTint="@color/color_app"
                 app:cornerRadius="20sp"
                 android:layout_marginVertical="10sp"/>
 
@@ -126,7 +126,7 @@
                 android:layout_gravity="center"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="@color/black"/>
+                android:textColor="@color/color_app"/>
 
         </LinearLayout>
 

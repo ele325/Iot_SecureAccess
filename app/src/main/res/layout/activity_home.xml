@@ -1,10 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/img"
+    android:orientation="vertical"
     tools:context=".HomeActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <!-- RelativeLayout contenant le texte de bienvenue et le logo -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Welcome\nPlease sign up here !"
+                android:textColor="@color/color_app"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="100dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="28dp"
+                android:src="@drawable/logo" />
+        </RelativeLayout>
+
+        <!-- Bloc contenant les champs de saisie et les boutons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="421dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/shape"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Champ Location -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location:"
+                android:textColor="@color/color_app"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:hint="Enter your location"
+                android:inputType="text"
+                android:textSize="14sp" />
+
+            <!-- Champ Code -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Code:"
+                android:textColor="@color/color_app"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:hint="Enter your code"
+                android:inputType="text"
+                android:textSize="14sp" />
+
+            <!-- Boutons d'action -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="@color/color_app"
+                    android:text="ADD"
+                    android:textColor="@color/white"
+                    app:cornerRadius="10sp" />
+
+                <Button
+                    android:id="@+id/btn_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="@color/color_app"
+                    android:text="DELETE"
+                    android:textColor="@color/white"
+                    app:cornerRadius="10sp" />
+
+                <Button
+                    android:id="@+id/btn_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/color_app"
+                    android:text="EDIT"
+                    android:textColor="@color/white"
+                    app:cornerRadius="10sp" />
+            </LinearLayout>
+
+            <!-- Bouton Generate Code QR -->
+            <Button
+                android:id="@+id/btn_generate_code_qr"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="@color/color_app"
+                android:text="GENERATE QR CODE"
+                android:textColor="@color/white"
+                app:cornerRadius="10sp" />
+
+            <ImageView
+                android:id="@+id/qr_code_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:src="@drawable/default_qr_code" />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/img"
+    android:orientation="vertical"
+    tools:context=".HomeActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <!-- RelativeLayout contenant le texte de bienvenue et le logo -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Welcome\nPlease sign up here !"
+                android:textColor="@color/color_app"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="100dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="28dp"
+                android:src="@drawable/logo" />
+        </RelativeLayout>
+
+        <!-- Bloc contenant les champs de saisie et les boutons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="463dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/shape"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!--  Titre principal  -->
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="32dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Contrôle de la Porte"
+                android:textColor="@color/color_app"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:textSize="24sp" />
+            <!--  CardView pour le bouton Ouvrir la porte  -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardOpenDoor"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvTitle"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="32dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:contentDescription="Image ouvrir la porte"
+                        android:src="@drawable/img_1" />
+
+                    <Button
+                        android:id="@+id/btnOn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/color_app"
+                        android:text="Ouvrir la porte"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <!--  CardView pour le bouton Fermer la porte  -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardCloseDoor"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/cardOpenDoor"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:contentDescription="Image fermer la porte"
+                        android:src="@drawable/img_2" />
+
+                    <Button
+                        android:id="@+id/btnOff"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/color_app"
+                        android:text="Fermer la porte"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardScanQR"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/cardCloseDoor"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp">
+
+            <LinearLayout
+                android:layout_width="302dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="Image scanner QR code"
+                    android:src="@drawable/img_3" />
+
+                <Button
+                    android:id="@+id/btnScanQR"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/color_app"
+                    android:text="Scanner QR Code"
+                    android:textColor="@color/white" />
+
+
+            </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

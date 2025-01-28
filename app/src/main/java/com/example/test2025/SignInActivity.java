@@ -69,6 +69,8 @@ public class SignInActivity extends AppCompatActivity {
         });
 
 
+        
+
     }
 
     private void checkEmailVerification() {
@@ -79,6 +81,7 @@ public class SignInActivity extends AppCompatActivity {
                 finish();
             }else
             {
+                loggedUser.sendEmailVerification();
                 loggedUser.sendEmailVerification();
                 Toast.makeText(this, "Please verified email", Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
