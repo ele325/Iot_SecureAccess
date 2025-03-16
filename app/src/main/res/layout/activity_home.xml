@@ -6,7 +6,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/img"
     android:orientation="vertical"
     tools:context=".HomeActivity">
 
@@ -27,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:text="Welcome\nPlease sign up here !"
+                android:text="Welcome\nPlease add door !"
                 android:textColor="@color/color_app"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -122,7 +121,9 @@
                     android:backgroundTint="@color/color_app"
                     android:text="EDIT"
                     android:textColor="@color/white"
-                    app:cornerRadius="10sp" />
+                    app:cornerRadius="10sp"
+                    android:onClick="onEditButtonClick"
+                    tools:ignore="OnClick" />
             </LinearLayout>
 
             <!-- Bouton Generate Code QR -->
@@ -143,6 +144,13 @@
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:src="@drawable/default_qr_code" />
+
+            <Spinner
+                android:id="@+id/spinner_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/status_array" /> <!-- Vous pouvez remplir cet array avec les valeurs "open", "closed", etc. -->
+
 
         </LinearLayout>
     </LinearLayout>

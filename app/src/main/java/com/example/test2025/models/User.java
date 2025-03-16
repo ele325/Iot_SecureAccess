@@ -3,11 +3,8 @@ package com.example.test2025.models;
 public class User {
     private String userName, email, cin;
 
-    public User() {
 
-    }
-
-    public User(String userName, String email, String cin) {
+    public User(String userName, String email, String cin , Number phone) {
         this.userName = userName;
         this.email = email;
         this.cin = cin;
@@ -36,4 +33,6 @@ public class User {
     public void setCin(String cin) {
         this.cin = cin;
     }
+
+
 }

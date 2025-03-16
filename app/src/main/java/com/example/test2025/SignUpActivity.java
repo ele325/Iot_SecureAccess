@@ -1,7 +1,6 @@
 package com.example.test2025;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,21 +9,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.test2025.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SignUpActivity extends AppCompatActivity {
-    //Declaration des variables
+
     private TextView goToSignIn;
-    private EditText userName, email, cin, password, confirmPassword;
+    private EditText userName, email, cin, phone, password, confirmPassword;
     private Button btnSignUp;
-    private String userNameString, emailString, cinString, passwordString, confirmPasswordString;
+    private String userNameString, emailString, cinString, phoneString, passwordString, confirmPasswordString;
     private static final String EMAIL_REGEX = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
     private FirebaseAuth firebaseAuth;
@@ -34,8 +34,9 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-        //Affectation des variables
-                goToSignIn = findViewById(R.id.go_to_sign_in);
+
+        // Initialiser les composants UI
+        goToSignIn = findViewById(R.id.go_to_sign_in);
         userName = findViewById(R.id.user_name_sign_up);
         email = findViewById(R.id.email_sign_up);
         cin = findViewById(R.id.cin_sign_up);
@@ -46,28 +47,25 @@ public class SignUpActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         progressDialog = new ProgressDialog(this);
 
-        // actions
+        // Action : Aller à SignInActivity quand on clique sur le lien "Go to Sign In"
+        goToSignIn.setOnClickListener(v -> startActivity(new Intent(this, SignInActivity.class)));
+
+        // Action : Inscription des utilisateurs lorsque le bouton "Sign Up" est cliqué
         btnSignUp.setOnClickListener(v -> {
             if (validate()) {
-                progressDialog.setMessage("please wait !");
+                progressDialog.setMessage("please wait!");
                 progressDialog.show();
-                firebaseAuth.createUserWithEmailAndPassword(emailString, passwordString).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        sendEmailVerification();
-                    } else {
-                        Toast.makeText(this, "failed", Toast.LENGTH_SHORT).show();
-                        progressDialog.dismiss();
-                    }
-
-                });
-
+                firebaseAuth.createUserWithEmailAndPassword(emailString, passwordString)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                sendEmailVerification();
+                            } else {
+                                Toast.makeText(this, "Sign-up failed", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                            }
+                        });
             }
         });
-        goToSignIn.setOnClickListener(v -> {
-            // to do after click to text view
-            startActivity(new Intent(this, SignInActivity.class));
-        });
-        // Declarations des methodes
     }
 
     private void sendEmailVerification() {
@@ -76,12 +74,12 @@ public class SignUpActivity extends AppCompatActivity {
             loggedUser.sendEmailVerification().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     sendUserData();
-                    Toast.makeText(this, "registration done please check your email", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Registration done, please check your email", Toast.LENGTH_LONG).show();
                     startActivity(new Intent(this, SignInActivity.class));
                     progressDialog.dismiss();
                     finish();
                 } else {
-                    Toast.makeText(this, "failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Email verification failed", Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                 }
             });
@@ -90,38 +88,67 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void sendUserData() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference("users");
-        User user = new User(userNameString, emailString, cinString);
-        databaseReference.child(""+firebaseAuth.getUid()).setValue(user);
+        DatabaseReference databaseReference = firebaseDatabase.getReference("users");  // Référence vers "users"
 
+        // Récupérer les valeurs saisies par l'utilisateur
+        String userNameString = userName.getText().toString().trim();
+        String emailString = email.getText().toString().trim();
+        String cinString = cin.getText().toString().trim();
+        String phoneString = phone.getText().toString().trim();  // Récupérer le téléphone
+
+        // Créer une carte de données utilisateur à enregistrer
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("cin", cinString);  // CIN
+        userMap.put("codeNum", "1623");  // Code Number (vous pouvez le rendre dynamique si nécessaire)
+        userMap.put("firstname", userNameString);  // Prénom
+        userMap.put("lastname", "Ayouni");  // Nom de famille (ajustez-le si nécessaire)
+        userMap.put("location", "sfax");  // Lieu
+        userMap.put("status", "open");  // Statut
+        userMap.put("door_status", "open");  // Statut de la porte
+        userMap.put("door_code", "XYZ123");  // Code de la porte
+
+        // Utiliser l'ID de l'utilisateur Firebase authentifié pour définir l'utilisateur unique
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        if (firebaseUser != null) {
+            String userId = firebaseUser.getUid();  // Utiliser l'ID de l'utilisateur authentifié comme ID Firebase
+
+            // Enregistrer les données utilisateur sous "/users/{userId}"
+            databaseReference.child(userId).setValue(userMap).addOnCompleteListener(saveTask -> {
+                if (saveTask.isSuccessful()) {
+                    Toast.makeText(this, "Données utilisateur enregistrées avec succès", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Erreur lors de l'enregistrement des données utilisateur", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
+
 
     private boolean validate() {
         boolean result = false;
         userNameString = userName.getText().toString().trim();
         emailString = email.getText().toString().trim();
         cinString = cin.getText().toString().trim();
+        phoneString = phone.getText().toString().trim();  // Validation du téléphone
         passwordString = password.getText().toString().trim();
         confirmPasswordString = confirmPassword.getText().toString().trim();
 
         if (userNameString.length() < 7) {
-            userName.setError("user name is invalid");
+            userName.setError("Username is invalid");
         } else if (!isValidEmail(emailString)) {
-            email.setError("email is invalid");
+            email.setError("Email is invalid");
         } else if (cinString.length() != 8) {
-            cin.setError("cin is invalid");
-
+            cin.setError("CIN is invalid");
+        } else if (phoneString.length() != 8) {  // Vérifier si le téléphone est valide
+            phone.setError("Phone number is invalid");
         } else if (passwordString.length() < 6) {
-            password.setError("password is invalid");
-
+            password.setError("Password is invalid");
         } else if (!confirmPasswordString.equals(passwordString)) {
-            confirmPassword.setError("confirm password is invalid");
+            confirmPassword.setError("Passwords do not match");
         } else {
             result = true;
         }
         return result;
-
-
     }
 
     private boolean isValidEmail(String email) {

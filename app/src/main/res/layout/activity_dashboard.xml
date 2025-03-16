@@ -6,7 +6,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/img"
     android:orientation="vertical"
     tools:context=".HomeActivity">
 
@@ -27,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:text="Welcome\nPlease sign up here !"
+                android:text="Welcome\nPlease control your door !"
                 android:textColor="@color/color_app"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -58,7 +57,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="32dp"
                 android:fontFamily="sans-serif-medium"
-                android:text="Contrôle de la Porte"
+                android:text="door control"
                 android:textColor="@color/color_app"
                 android:layout_gravity="center"
                 android:textStyle="bold"
@@ -93,7 +92,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
                         android:backgroundTint="@color/color_app"
-                        android:text="Ouvrir la porte"
+                        android:text="Open the door"
                         android:textColor="@color/white" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -127,7 +126,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
                         android:backgroundTint="@color/color_app"
-                        android:text="Fermer la porte"
+                        android:text="Close the door"
                         android:textColor="@color/white" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -161,7 +160,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/color_app"
-                    android:text="Scanner QR Code"
+                    android:text="Scan QR Code"
                     android:textColor="@color/white" />
 
 

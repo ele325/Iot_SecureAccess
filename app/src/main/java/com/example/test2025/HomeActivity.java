@@ -1,44 +1,45 @@
 package com.example.test2025;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import android.graphics.Bitmap;
-import android.widget.ImageView;
-
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.qrcode.QRCodeWriter;
 
 public class HomeActivity extends AppCompatActivity {
 
     private EditText etLocation, etCode;
     private Button btnAdd, btnDelete, btnEdit, btnGenerateQRCode;
     private ImageView ivQRCode;
-    private DatabaseReference doorsRef;
+    private Spinner spinnerStatus;  // Spinner pour le statut
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Initialisation des vues
+        // Initialiser les vues
         etLocation = findViewById(R.id.location);
         etCode = findViewById(R.id.code);
         btnAdd = findViewById(R.id.btn_add);
@@ -46,20 +47,18 @@ public class HomeActivity extends AppCompatActivity {
         btnEdit = findViewById(R.id.btn_edit);
         btnGenerateQRCode = findViewById(R.id.btn_generate_code_qr);
         ivQRCode = findViewById(R.id.qr_code_image);
+        spinnerStatus = findViewById(R.id.spinner_status);  // Spinner pour le statut
 
-        // Référence Firebase
-        doorsRef = FirebaseDatabase.getInstance().getReference("Doors");
-
-        // Ajouter une porte
+        // Ajout porte
         btnAdd.setOnClickListener(view -> addDoor());
 
-        // Supprimer une porte
+        // Supprimer porte
         btnDelete.setOnClickListener(view -> deleteDoor());
 
-        // Modifier une porte
-        btnEdit.setOnClickListener(view -> editDoor());
+        // Edit porte
+        btnEdit.setOnClickListener(view -> onEditButtonClick(view));
 
-        // Générer un code QR
+        // Générer QR code
         btnGenerateQRCode.setOnClickListener(view -> generateQRCode());
     }
 
@@ -67,113 +66,136 @@ public class HomeActivity extends AppCompatActivity {
         String location = etLocation.getText().toString().trim();
         String code = etCode.getText().toString().trim();
 
-        if (TextUtils.isEmpty(location) || TextUtils.isEmpty(code)) {
-            Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
+        // Vérifier si les champs sont vides
+        if (TextUtils.isEmpty(location)) {
+            etLocation.setError("Cannot be empty");
+            return;
+        }
+        if (TextUtils.isEmpty(code)) {
+            etCode.setError("Cannot be empty");
             return;
         }
 
-        String doorId = doorsRef.push().getKey(); // Génère un ID unique
-        Map<String, String> doorData = new HashMap<>();
-        doorData.put("location", location);
-        doorData.put("code", code);
+        // Vérifier si le code contient exactement 4 chiffres
+        if (!code.matches("\\d{4}")) {
+            Toast.makeText(this, "The code must be exactly 4 digits", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        doorsRef.child(doorId).setValue(doorData)
-                .addOnCompleteListener(task -> {
+        // Récupérer l'ID de l'utilisateur
+        FirebaseUser loggedUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (loggedUser != null) {
+            String userId = loggedUser.getUid(); // Récupérer l'ID de l'utilisateur connecté
+
+            // Créer une nouvelle carte avec les données de la porte
+            Map<String, Object> doorData = new HashMap<>();
+            doorData.put("location", location);
+            doorData.put("code", code); // Utiliser le code comme code
+            doorData.put("status", spinnerStatus.getSelectedItem().toString()); // Utiliser le statut dynamique sélectionné
+            doorData.put("qr_code", code); // Utiliser le code comme qr_code
+
+            // Générer un ID pour la porte
+            String doorId = FirebaseDatabase.getInstance().getReference("Users").child(userId).child("doors").push().getKey();
+
+            // Enregistrer les données sous l'utilisateur et sous "doors" dans Firebase
+            if (doorId != null) {
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId).child("doors").child(doorId);
+                userRef.setValue(doorData).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(this, "Porte ajoutée avec succès", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeActivity.this, "Door added successfully", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(this, "Erreur lors de l'ajout", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeActivity.this, "Error while adding door", Toast.LENGTH_SHORT).show();
                     }
                 });
+            }
+        }
     }
+
 
     private void deleteDoor() {
-        String code = etCode.getText().toString().trim();
+        String doorName = etCode.getText().toString().trim(); // Utiliser doorName comme identifiant
 
-        if (TextUtils.isEmpty(code)) {
-            Toast.makeText(this, "Veuillez entrer le code", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(doorName)) {
+            etCode.setError("This field cannot be empty");
             return;
         }
 
-        doorsRef.orderByChild("code").equalTo(code)
-                .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            for (DataSnapshot child : snapshot.getChildren()) {
-                                child.getRef().removeValue();
-                            }
-                            Toast.makeText(HomeActivity.this, "Porte supprimée avec succès", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(HomeActivity.this, "Porte introuvable", Toast.LENGTH_SHORT).show();
-                        }
-                    }
+        FirebaseUser loggedUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (loggedUser != null) {
+            String userId = loggedUser.getUid(); // Récupérer l'ID de l'utilisateur connecté
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(HomeActivity.this, "Erreur : " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            userRef.child("door_code").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        snapshot.getRef().removeValue(); // Supprimer la porte
+                        Toast.makeText(HomeActivity.this, "Door deleted successfully", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(HomeActivity.this, "Door not found", Toast.LENGTH_SHORT).show();
                     }
-                });
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(HomeActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
-    private void editDoor() {
-        String code = etCode.getText().toString().trim();
-        String location = etLocation.getText().toString().trim();
-
-        if (TextUtils.isEmpty(code) || TextUtils.isEmpty(location)) {
-            Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        doorsRef.orderByChild("code").equalTo(code)
-                .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            for (DataSnapshot child : snapshot.getChildren()) {
-                                child.getRef().child("location").setValue(location);
-                            }
-                            Toast.makeText(HomeActivity.this, "Porte modifiée avec succès", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(HomeActivity.this, "Porte introuvable", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(HomeActivity.this, "Erreur : " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+    public void onEditButtonClick(View view) {
+        Intent intent = new Intent(HomeActivity.this, EditDoorActivity.class);
+        startActivity(intent);
     }
 
     private void generateQRCode() {
         String code = etCode.getText().toString().trim();
 
+        // Vérifier si le code est vide
         if (TextUtils.isEmpty(code)) {
-            Toast.makeText(this, "Veuillez entrer un code", Toast.LENGTH_SHORT).show();
+            etCode.setError("This field cannot be empty");
+            return;
+        }
+
+        // Vérifier si le code contient exactement 4 chiffres
+        if (!code.matches("\\d{4}")) {
+            Toast.makeText(this, "The code must be exactly 4 digits", Toast.LENGTH_SHORT).show();
             return;
         }
 
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         try {
-            // Génération du QR code
+            // Générer le QR code
             Bitmap bitmap = toBitmap(qrCodeWriter.encode(code, BarcodeFormat.QR_CODE, 400, 400));
-            ivQRCode.setImageBitmap(bitmap); // Affichage du QR code dans l'ImageView
+            ivQRCode.setImageBitmap(bitmap); // Afficher le QR code dans l'ImageView
 
             if (bitmap != null) {
-                // Démarrer l'activité DashboardActivity
-                Intent intent = new Intent(HomeActivity.this, DashboardActivity.class);
-                startActivity(intent);
-                // Optionnel : pour terminer l'activité actuelle
+                // Sauvegarder le QR code généré dans Firebase
+                saveQRCodeInFirebase(code);
             }
 
         } catch (WriterException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Erreur lors de la génération du QR code", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error generating the QR code", Toast.LENGTH_SHORT).show();
         }
     }
 
-
+    private void saveQRCodeInFirebase(String code) {
+        // Sauvegarder le QR code généré dans Firebase sous "validQRCode"
+        FirebaseDatabase.getInstance().getReference("validQRCode")
+                .setValue(code)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(HomeActivity.this, "QR Code saved in Firebase", Toast.LENGTH_SHORT).show();
+                        // Lancer l'activité Dashboard après la sauvegarde
+                        Intent intent = new Intent(HomeActivity.this, DashboardActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(HomeActivity.this, "Error saving the QR Code", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
     private Bitmap toBitmap(com.google.zxing.common.BitMatrix matrix) {
         int width = matrix.getWidth();
