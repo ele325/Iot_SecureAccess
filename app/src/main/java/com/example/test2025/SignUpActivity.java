@@ -22,9 +22,9 @@ import java.util.regex.Pattern;
 public class SignUpActivity extends AppCompatActivity {
 
     private TextView goToSignIn;
-    private EditText userName, email, cin, phone, password, confirmPassword;
+    private EditText userName, email, cin, password, confirmPassword;
     private Button btnSignUp;
-    private String userNameString, emailString, cinString, phoneString, passwordString, confirmPasswordString;
+    private String userNameString, emailString, cinString, passwordString, confirmPasswordString;
     private static final String EMAIL_REGEX = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
     private FirebaseAuth firebaseAuth;
@@ -35,7 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        // Initialiser les composants UI
+        // Initialize UI components
         goToSignIn = findViewById(R.id.go_to_sign_in);
         userName = findViewById(R.id.user_name_sign_up);
         email = findViewById(R.id.email_sign_up);
@@ -47,13 +47,13 @@ public class SignUpActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         progressDialog = new ProgressDialog(this);
 
-        // Action : Aller à SignInActivity quand on clique sur le lien "Go to Sign In"
+        // Navigate to SignInActivity
         goToSignIn.setOnClickListener(v -> startActivity(new Intent(this, SignInActivity.class)));
 
-        // Action : Inscription des utilisateurs lorsque le bouton "Sign Up" est cliqué
+        // Sign up user when the button is clicked
         btnSignUp.setOnClickListener(v -> {
             if (validate()) {
-                progressDialog.setMessage("please wait!");
+                progressDialog.setMessage("Please wait...");
                 progressDialog.show();
                 firebaseAuth.createUserWithEmailAndPassword(emailString, passwordString)
                         .addOnCompleteListener(task -> {
@@ -88,48 +88,75 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void sendUserData() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference("users");  // Référence vers "users"
+        DatabaseReference databaseReference = firebaseDatabase.getReference("users");
 
-        // Récupérer les valeurs saisies par l'utilisateur
-        String userNameString = userName.getText().toString().trim();
-        String emailString = email.getText().toString().trim();
-        String cinString = cin.getText().toString().trim();
-        String phoneString = phone.getText().toString().trim();  // Récupérer le téléphone
-
-        // Créer une carte de données utilisateur à enregistrer
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("cin", cinString);  // CIN
-        userMap.put("codeNum", "1623");  // Code Number (vous pouvez le rendre dynamique si nécessaire)
-        userMap.put("firstname", userNameString);  // Prénom
-        userMap.put("lastname", "Ayouni");  // Nom de famille (ajustez-le si nécessaire)
-        userMap.put("location", "sfax");  // Lieu
-        userMap.put("status", "open");  // Statut
-        userMap.put("door_status", "open");  // Statut de la porte
-        userMap.put("door_code", "XYZ123");  // Code de la porte
-
-        // Utiliser l'ID de l'utilisateur Firebase authentifié pour définir l'utilisateur unique
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         if (firebaseUser != null) {
-            String userId = firebaseUser.getUid();  // Utiliser l'ID de l'utilisateur authentifié comme ID Firebase
+            String userId = firebaseUser.getUid();
 
-            // Enregistrer les données utilisateur sous "/users/{userId}"
-            databaseReference.child(userId).setValue(userMap).addOnCompleteListener(saveTask -> {
-                if (saveTask.isSuccessful()) {
-                    Toast.makeText(this, "Données utilisateur enregistrées avec succès", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Erreur lors de l'enregistrement des données utilisateur", Toast.LENGTH_SHORT).show();
-                }
-            });
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("cin", cinString);
+            userMap.put("fullName", userNameString);
+            userMap.put("email", emailString);
+
+            // Generate initial door data using CIN
+            String initialDoorCode = cinString.length() >= 4 ? cinString.substring(0, 4) : "0000";
+            String initialDoorId = FirebaseDatabase.getInstance().getReference().push().getKey();
+
+            // Create default door under "doors" node
+            Map<String, Object> doorMap = new HashMap<>();
+            doorMap.put("location", "Default Location");
+            doorMap.put("code", initialDoorCode);
+            doorMap.put("status", "open");
+
+            userMap.put("doors/" + initialDoorId, doorMap);
+
+            databaseReference.child(userId).updateChildren(userMap)
+                    .addOnCompleteListener(saveTask -> {
+                        if (saveTask.isSuccessful()) {
+                            Toast.makeText(this, "User data saved successfully", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(this, "Failed to save user data", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
     }
 
+//    private void sendUserData() {
+//        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+//        DatabaseReference databaseReference = firebaseDatabase.getReference("users");
+//
+//        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+//        if (firebaseUser != null) {
+//            String userId = firebaseUser.getUid();
+//
+//            Map<String, Object> userMap = new HashMap<>();
+//            userMap.put("cin", cinString);
+//            userMap.put("codeNum", "1623");
+//            userMap.put("firstname", userNameString);
+//            userMap.put("lastname", "Ayouni");
+//            userMap.put("location", "sfax");
+//            userMap.put("status", "open");
+//            userMap.put("door_status", "open");
+//            userMap.put("door_code", "XYZ123");
+//
+//            // Store data in /users/{userId}
+//            databaseReference.child(userId).setValue(userMap)
+//                    .addOnCompleteListener(saveTask -> {
+//                        if (saveTask.isSuccessful()) {
+//                            Toast.makeText(this, "User data saved successfully", Toast.LENGTH_SHORT).show();
+//                        } else {
+//                            Toast.makeText(this, "Failed to save user data", Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//        }
+//    }
 
     private boolean validate() {
         boolean result = false;
         userNameString = userName.getText().toString().trim();
         emailString = email.getText().toString().trim();
         cinString = cin.getText().toString().trim();
-        phoneString = phone.getText().toString().trim();  // Validation du téléphone
         passwordString = password.getText().toString().trim();
         confirmPasswordString = confirmPassword.getText().toString().trim();
 
@@ -139,8 +166,6 @@ public class SignUpActivity extends AppCompatActivity {
             email.setError("Email is invalid");
         } else if (cinString.length() != 8) {
             cin.setError("CIN is invalid");
-        } else if (phoneString.length() != 8) {  // Vérifier si le téléphone est valide
-            phone.setError("Phone number is invalid");
         } else if (passwordString.length() < 6) {
             password.setError("Password is invalid");
         } else if (!confirmPasswordString.equals(passwordString)) {

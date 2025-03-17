@@ -3,7 +3,7 @@
     <string name="forgot_password"><u>Forgot password !</u></string>
     <string name="register_here"><u>Dont have an account ? register here !</u></string>
     <string name="already_have_an_account"><u>already_have_an_account</u></string>
-
+    <string name="select_door_prompt" />
 
 
     <string-array name="status_array">

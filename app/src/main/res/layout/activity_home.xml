@@ -15,7 +15,7 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-        <!-- RelativeLayout contenant le texte de bienvenue et le logo -->
+        <!-- Header Section -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -39,17 +39,25 @@
                 android:src="@drawable/logo" />
         </RelativeLayout>
 
-        <!-- Bloc contenant les champs de saisie et les boutons -->
+        <!-- Main Content Card -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="421dp"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/shape"
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Champ Location -->
+            <!-- Door Selection -->
+            <Spinner
+                android:id="@+id/spinner_doors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:prompt="@string/select_door_prompt" />
+
+            <!-- Input Fields -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -62,16 +70,16 @@
                 android:id="@+id/location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:hint="Enter your location"
+                android:layout_marginTop="4dp"
+                android:hint="Enter door location"
                 android:inputType="text"
+                android:padding="8dp"
                 android:textSize="14sp" />
 
-            <!-- Champ Code -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:text="Code:"
                 android:textColor="@color/color_app"
                 android:textSize="16sp"
@@ -81,76 +89,98 @@
                 android:id="@+id/code"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:hint="Enter your code"
-                android:inputType="text"
+                android:layout_marginTop="4dp"
+                android:hint="Enter 4-digit code"
+                android:inputType="number"
+                android:maxLength="4"
+                android:padding="8dp"
                 android:textSize="14sp" />
 
-            <!-- Boutons d'action -->
-            <LinearLayout
+            <!-- Action Buttons -->
+            <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:columnCount="2"
+                android:rowCount="2">
 
                 <Button
                     android:id="@+id/btn_add"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
                     android:backgroundTint="@color/color_app"
                     android:text="ADD"
                     android:textColor="@color/white"
-                    app:cornerRadius="10sp" />
+                    android:textSize="10sp"
+                    app:cornerRadius="8dp" />
 
                 <Button
                     android:id="@+id/btn_delete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
                     android:backgroundTint="@color/color_app"
                     android:text="DELETE"
                     android:textColor="@color/white"
-                    app:cornerRadius="10sp" />
+                    android:textSize="10sp"
+                    app:cornerRadius="8dp" />
 
                 <Button
                     android:id="@+id/btn_edit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="33dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
                     android:backgroundTint="@color/color_app"
                     android:text="EDIT"
                     android:textColor="@color/white"
-                    app:cornerRadius="10sp"
-                    android:onClick="onEditButtonClick"
-                    tools:ignore="OnClick" />
-            </LinearLayout>
+                    android:textSize="10sp"
+                    app:cornerRadius="8dp" />
 
-            <!-- Bouton Generate Code QR -->
+                <Button
+                    android:id="@+id/btn_manage"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:backgroundTint="@color/color_app"
+                    android:text="MANAGE"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    app:cornerRadius="8dp" />
+            </GridLayout>
+
+            <!-- QR Code Section -->
             <Button
                 android:id="@+id/btn_generate_code_qr"
-                android:layout_width="330dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:layout_marginTop="16dp"
                 android:backgroundTint="@color/color_app"
                 android:text="GENERATE QR CODE"
                 android:textColor="@color/white"
-                app:cornerRadius="10sp" />
+                android:textSize="10sp"
+                app:cornerRadius="8dp" />
 
             <ImageView
                 android:id="@+id/qr_code_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_width="187dp"
+                android:layout_height="176dp"
                 android:layout_gravity="center"
+                android:layout_marginTop="9dp"
+                android:scaleType="fitXY"
                 android:src="@drawable/default_qr_code" />
 
+            <!-- Status Spinner (Keep existing) -->
             <Spinner
                 android:id="@+id/spinner_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:entries="@array/status_array" /> <!-- Vous pouvez remplir cet array avec les valeurs "open", "closed", etc. -->
-
+                android:layout_marginTop="16dp"
+                android:entries="@array/status_array" />
 
         </LinearLayout>
     </LinearLayout>

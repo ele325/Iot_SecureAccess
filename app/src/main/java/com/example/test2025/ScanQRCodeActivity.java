@@ -41,7 +41,7 @@ public class ScanQRCodeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        Log.i("test","-------------------------------------------------------------");
         // Get the result from the QR code scan
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
@@ -57,6 +57,7 @@ public class ScanQRCodeActivity extends AppCompatActivity {
 
     private void checkQRCodeInFirebase(String scannedCode) {
         // Search for the scanned QR code in Firebase
+        Log.i("vvvvvvv","///////////////////");
         qrCodeRef.orderByValue().equalTo(scannedCode)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
